@@ -32,14 +32,19 @@ export function bfs(grid: Grid): AlgorithmResult {
     const currentPos = indexToPos(grid.cols, currentIdx);
 
     // Record step
+    const neighborCount = getNeighbors4(grid, currentPos).length;
+    const isFinal = currentIdx === endIdx;
     steps.push({
       openSet: setToPositions(openSet, grid.cols),
       closedSet: setToPositions(visited, grid.cols),
       current: currentPos,
       currentPath: reconstructPath(cameFrom, currentIdx, grid.cols),
-      finalPath: currentIdx === endIdx
+      finalPath: isFinal
         ? reconstructPath(cameFrom, currentIdx, grid.cols)
         : undefined,
+      description: isFinal
+        ? `到达终点 (${currentPos.row},${currentPos.col})！BFS 保证这是最短路径，长度 ${reconstructPath(cameFrom, currentIdx, grid.cols).length} 步。`
+        : `从队列头部取出节点 (${currentPos.row},${currentPos.col})，距起点 ${reconstructPath(cameFrom, currentIdx, grid.cols).length - 1} 步。检查其 ${neighborCount} 个邻居，将未访问的加入队列尾部。队列中还有 ${openSet.size} 个待处理节点。`,
     });
 
     // Found the end

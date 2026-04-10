@@ -33,14 +33,19 @@ export function dfs(grid: Grid): AlgorithmResult {
     const currentPos = indexToPos(grid.cols, currentIdx);
 
     // Record step
+    const neighborCount = getNeighbors4(grid, currentPos).length;
+    const isFinal = currentIdx === endIdx;
     steps.push({
       openSet: setToPositions(openSet, grid.cols),
       closedSet: setToPositions(visited, grid.cols),
       current: currentPos,
       currentPath: reconstructPath(cameFrom, currentIdx, grid.cols),
-      finalPath: currentIdx === endIdx
+      finalPath: isFinal
         ? reconstructPath(cameFrom, currentIdx, grid.cols)
         : undefined,
+      description: isFinal
+        ? `到达终点 (${currentPos.row},${currentPos.col})！找到路径长度 ${reconstructPath(cameFrom, currentIdx, grid.cols).length} 步。注意：DFS 不保证这是最短路径。`
+        : `从栈顶弹出节点 (${currentPos.row},${currentPos.col})，深度 ${reconstructPath(cameFrom, currentIdx, grid.cols).length - 1}。将其 ${neighborCount} 个未访问邻居压入栈。栈中还有 ${openSet.size} 个节点。`,
     });
 
     // Found the end

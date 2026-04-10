@@ -39,6 +39,8 @@ export interface AlgorithmStep {
   currentPath: Position[];
   /** If algorithm is done, the final path. undefined while running. */
   finalPath?: Position[];
+  /** Human-readable explanation of what happened in this step. */
+  description?: string;
 }
 
 /** Result returned by every pathfinding algorithm. */

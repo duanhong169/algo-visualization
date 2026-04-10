@@ -50,14 +50,20 @@ export function dijkstra(grid: Grid): AlgorithmResult {
     const currentPos = indexToPos(grid.cols, currentIdx);
 
     // Record step
+    const currentDist = dist.get(currentIdx) ?? 0;
+    const neighborCount = getNeighbors4(grid, currentPos).length;
+    const isFinal = currentIdx === endIdx;
     steps.push({
       openSet: openSet.map((idx) => indexToPos(grid.cols, idx)),
       closedSet: setToPositions(visited, grid.cols),
       current: currentPos,
       currentPath: reconstructPath(cameFrom, currentIdx, grid.cols),
-      finalPath: currentIdx === endIdx
+      finalPath: isFinal
         ? reconstructPath(cameFrom, currentIdx, grid.cols)
         : undefined,
+      description: isFinal
+        ? `到达终点 (${currentPos.row},${currentPos.col})！最短距离 ${currentDist}，路径长度 ${reconstructPath(cameFrom, currentIdx, grid.cols).length} 步。`
+        : `从优先队列取出距离最小的节点 (${currentPos.row},${currentPos.col})，dist=${currentDist}。对其 ${neighborCount} 个邻居执行松弛操作。队列中还有 ${openSet.length} 个节点。`,
     });
 
     // Found the end

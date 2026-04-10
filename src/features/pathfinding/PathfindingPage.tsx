@@ -4,11 +4,14 @@ import { useParams, Link } from 'react-router-dom';
 import { ALGORITHM_CATALOG } from '@/constants/algorithms';
 
 import { PATHFINDING_ALGORITHMS } from './algorithms';
+import { AlgorithmInfoPanel } from './components/AlgorithmInfoPanel';
 import { AlgorithmPicker } from './components/AlgorithmPicker';
 import { GridCanvas } from './components/GridCanvas';
+import { GridLegend } from './components/GridLegend';
 import { GridToolbar } from './components/GridToolbar';
 import { PlaybackControls } from './components/PlaybackControls';
 import { StatsPanel } from './components/StatsPanel';
+import { StepExplainer } from './components/StepExplainer';
 import { useGridEditor } from './hooks/useGridEditor';
 import { useVisualization } from './hooks/useVisualization';
 import { DEFAULT_GRID_LEVEL, GRID_LEVELS } from './constants';
@@ -177,7 +180,7 @@ export function PathfindingPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] flex-col gap-3 py-4">
+    <div className="flex h-[calc(100vh-3.5rem)] flex-col gap-3 overflow-y-auto py-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link to="/" className="text-sm text-text-muted hover:text-text">
@@ -204,16 +207,19 @@ export function PathfindingPage() {
         />
       </div>
 
+      {/* Color Legend */}
+      <GridLegend />
+
       {/* Canvas Grid */}
       <GridCanvas
         grid={grid}
         visualOverlay={visualOverlay}
         onCellClick={isRunning ? () => {} : handleCellClick}
         onCellDrag={isRunning ? () => {} : handleCellDrag}
-        className="flex-1"
+        className="min-h-[400px] flex-1"
       />
 
-      {/* Playback Controls */}
+      {/* Playback Controls + Step Explanation */}
       <div className="rounded-md border border-border bg-surface px-3 py-2">
         <PlaybackControls
           status={status}
@@ -232,8 +238,20 @@ export function PathfindingPage() {
           step={currentStep}
           isPathFound={isPathFound}
           totalVisited={totalVisited}
+          algorithmId={algorithmId}
         />
+        <div className="mt-2 border-t border-border pt-2">
+          <StepExplainer
+            step={currentStep}
+            stepIndex={currentStepIndex}
+            totalSteps={totalSteps}
+            algorithmId={algorithmId}
+          />
+        </div>
       </div>
+
+      {/* Algorithm Education Panel */}
+      <AlgorithmInfoPanel algorithmId={algorithmId} />
 
       {/* Keyboard shortcut hints */}
       <div className="flex gap-4 text-[11px] text-text-muted">

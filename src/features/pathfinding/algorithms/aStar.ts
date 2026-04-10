@@ -46,12 +46,14 @@ export function aStar(grid: Grid): AlgorithmResult {
     // Found the end
     if (currentIdx === endIdx) {
       const finalPath = reconstructPath(cameFrom, currentIdx, grid.cols);
+      const g = gScore.get(currentIdx) ?? 0;
       steps.push({
         openSet: setToPositions(openSetLookup, grid.cols),
         closedSet: setToPositions(closedSet, grid.cols),
         current: currentPos,
         currentPath: finalPath,
         finalPath,
+        description: `到达终点 (${currentPos.row},${currentPos.col})！路径总代价 g=${g.toFixed(1)}，路径长度 ${finalPath.length} 步。搜索完成。`,
       });
       return {
         steps,
@@ -65,15 +67,20 @@ export function aStar(grid: Grid): AlgorithmResult {
 
     // Record step for visualization
     const currentPath = reconstructPath(cameFrom, currentIdx, grid.cols);
+    const g = gScore.get(currentIdx) ?? 0;
+    const f = fScore.get(currentIdx) ?? 0;
+    const h = f - g;
+    const neighbors = getNeighbors8(grid, currentPos);
+
     steps.push({
       openSet: setToPositions(openSetLookup, grid.cols),
       closedSet: setToPositions(closedSet, grid.cols),
       current: currentPos,
       currentPath,
+      description: `从 Open Set 取出 f 值最小的节点 (${currentPos.row},${currentPos.col})，f=${f.toFixed(1)} (g=${g.toFixed(1)} + h=${h.toFixed(1)})。将其移入 Closed Set，展开 ${neighbors.length} 个邻居。Open Set 剩余 ${openSetLookup.size} 个节点。`,
     });
 
     // Explore neighbors
-    const neighbors = getNeighbors8(grid, currentPos);
     for (const neighbor of neighbors) {
       const neighborIdx = posToIndex(grid.cols, neighbor);
 
