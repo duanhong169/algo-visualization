@@ -9,7 +9,7 @@ export function Navbar() {
         <NavLink to="/" className="text-sm font-semibold text-white">
           AlgoViz
         </NavLink>
-        <nav className="flex gap-4">
+        <nav className="flex flex-1 gap-4">
           <NavLink
             to="/"
             end
@@ -20,6 +20,15 @@ export function Navbar() {
             Algorithms
           </NavLink>
         </nav>
+        <a
+          href="https://github.com/duanhong169/algo-visualization"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-white/70 hover:text-white"
+          title="View source on GitHub"
+        >
+          GitHub
+        </a>
       </div>
     </header>
   );
