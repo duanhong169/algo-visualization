@@ -107,7 +107,7 @@ export function GridToolbar({
       <Button variant="outline" size="sm" onClick={onClear} disabled={isRunning}>
         Clear Walls
       </Button>
-      <Button variant="outline" size="sm" onClick={onReset} disabled={isRunning}>
+      <Button variant="outline" size="sm" onClick={onReset}>
         Reset
       </Button>
     </div>

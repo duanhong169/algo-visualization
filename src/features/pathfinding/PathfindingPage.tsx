@@ -180,7 +180,7 @@ export function PathfindingPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] flex-col gap-3 overflow-y-auto py-4">
+    <div className="flex flex-col gap-3 py-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link to="/" className="text-sm text-text-muted hover:text-text">
@@ -216,7 +216,7 @@ export function PathfindingPage() {
         visualOverlay={visualOverlay}
         onCellClick={isRunning ? () => {} : handleCellClick}
         onCellDrag={isRunning ? () => {} : handleCellDrag}
-        className="min-h-[400px] flex-1"
+        className="h-[calc(100vh-16rem)]"
       />
 
       {/* Playback Controls + Step Explanation */}
