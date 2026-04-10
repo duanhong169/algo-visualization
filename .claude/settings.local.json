@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "WebFetch(domain:juejin.cn)",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "Bash(git:*)"
+    ]
+  }
+}
