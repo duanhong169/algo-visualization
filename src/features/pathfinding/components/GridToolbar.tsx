@@ -2,6 +2,7 @@ import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 import type { EditorTool } from '../types/grid';
+import type { MazeType } from '../hooks/useGridEditor';
 import { GRID_LEVELS } from '../constants';
 
 interface GridToolbarProps {
@@ -12,6 +13,7 @@ interface GridToolbarProps {
   isRunning: boolean;
   gridLevel: number;
   onGridLevelChange: (level: number) => void;
+  onGenerateMaze: (type: MazeType) => void;
 }
 
 const TOOLS: { id: EditorTool; label: string; icon: string }[] = [
@@ -29,6 +31,7 @@ export function GridToolbar({
   isRunning,
   gridLevel,
   onGridLevelChange,
+  onGenerateMaze,
 }: GridToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-surface px-3 py-2">
@@ -77,6 +80,26 @@ export function GridToolbar({
           </button>
         ))}
       </div>
+
+      <div className="h-4 w-px bg-border" />
+
+      {/* Maze generation */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onGenerateMaze('recursive-backtracker')}
+        disabled={isRunning}
+      >
+        Maze
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onGenerateMaze('random')}
+        disabled={isRunning}
+      >
+        Random
+      </Button>
 
       <div className="h-4 w-px bg-border" />
 

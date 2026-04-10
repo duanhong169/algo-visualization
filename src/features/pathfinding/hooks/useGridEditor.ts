@@ -2,7 +2,10 @@ import { useState, useCallback, useRef } from 'react';
 
 import type { Grid, Position, EditorTool } from '../types/grid';
 import { createGrid, setCell, getCell, posEquals } from '../utils/gridHelpers';
+import { generateRecursiveBacktracker, generateRandomWalls } from '../utils/mazeGenerators';
 import { CELL_VALUE_MAP } from '../constants';
+
+export type MazeType = 'recursive-backtracker' | 'random';
 
 interface UseGridEditorReturn {
   grid: Grid;
@@ -13,8 +16,8 @@ interface UseGridEditorReturn {
   setGrid: (grid: Grid) => void;
   clearGrid: () => void;
   resetGrid: () => void;
-  /** Resize to new dimensions, placing start/end at default positions. */
   resizeGrid: (rows: number, cols: number) => void;
+  generateMaze: (type: MazeType) => void;
 }
 
 function createDefaultGrid(rows: number, cols: number): Grid {
@@ -132,6 +135,25 @@ export function useGridEditor(initialRows: number, initialCols: number): UseGrid
     setGridState(createDefaultGrid(rows, cols));
   }, []);
 
+  const generateMaze = useCallback((type: MazeType) => {
+    setGridState((prev) => {
+      const base =
+        type === 'recursive-backtracker'
+          ? generateRecursiveBacktracker(prev.rows, prev.cols)
+          : generateRandomWalls(prev.rows, prev.cols, 0.3);
+
+      // Place start and end on empty cells
+      const startPos = findEmptyCell(base, Math.floor(prev.rows / 2), Math.floor(prev.cols / 4));
+      const endPos = findEmptyCell(base, Math.floor(prev.rows / 2), Math.floor((prev.cols * 3) / 4));
+
+      const cells = base.cells;
+      if (startPos) cells[startPos.row * prev.cols + startPos.col] = CELL_VALUE_MAP.start;
+      if (endPos) cells[endPos.row * prev.cols + endPos.col] = CELL_VALUE_MAP.end;
+
+      return { ...base, cells, start: startPos, end: endPos };
+    });
+  }, []);
+
   return {
     grid,
     activeTool,
@@ -142,5 +164,30 @@ export function useGridEditor(initialRows: number, initialCols: number): UseGrid
     clearGrid,
     resetGrid,
     resizeGrid,
+    generateMaze,
   };
+}
+
+/** Find an empty cell near a target position by spiraling outward. */
+function findEmptyCell(grid: Grid, targetRow: number, targetCol: number): Position | null {
+  // Check target first
+  if (grid.cells[targetRow * grid.cols + targetCol] === CELL_VALUE_MAP.empty) {
+    return { row: targetRow, col: targetCol };
+  }
+
+  // Spiral outward
+  for (let radius = 1; radius < Math.max(grid.rows, grid.cols); radius++) {
+    for (let dr = -radius; dr <= radius; dr++) {
+      for (let dc = -radius; dc <= radius; dc++) {
+        if (Math.abs(dr) !== radius && Math.abs(dc) !== radius) continue;
+        const r = targetRow + dr;
+        const c = targetCol + dc;
+        if (r < 0 || r >= grid.rows || c < 0 || c >= grid.cols) continue;
+        if (grid.cells[r * grid.cols + c] === CELL_VALUE_MAP.empty) {
+          return { row: r, col: c };
+        }
+      }
+    }
+  }
+  return null;
 }

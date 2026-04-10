@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import { ALGORITHM_CATALOG } from '@/constants/algorithms';
@@ -54,6 +54,7 @@ export function PathfindingPage() {
     clearGrid,
     resetGrid,
     resizeGrid,
+    generateMaze,
   } = useGridEditor(defaultLevel.rows, defaultLevel.cols);
 
   const {
@@ -116,6 +117,54 @@ export function PathfindingPage() {
     [reset, resizeGrid],
   );
 
+  const handleGenerateMaze = useCallback(
+    (type: 'recursive-backtracker' | 'random') => {
+      reset();
+      generateMaze(type);
+    },
+    [reset, generateMaze],
+  );
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Ignore when typing in inputs
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+
+      switch (e.key) {
+        case ' ': {
+          e.preventDefault();
+          if (status === 'playing') {
+            pause();
+          } else {
+            handleRun();
+          }
+          break;
+        }
+        case 'ArrowRight': {
+          e.preventDefault();
+          stepForward();
+          break;
+        }
+        case 'ArrowLeft': {
+          e.preventDefault();
+          stepBackward();
+          break;
+        }
+        case 'r':
+        case 'R': {
+          if (!e.metaKey && !e.ctrlKey) {
+            handleReset();
+          }
+          break;
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [status, pause, handleRun, stepForward, stepBackward, handleReset]);
+
   if (!algorithm) {
     return (
       <div className="py-6">
@@ -151,6 +200,7 @@ export function PathfindingPage() {
           isRunning={isRunning}
           gridLevel={gridLevel}
           onGridLevelChange={handleGridLevelChange}
+          onGenerateMaze={handleGenerateMaze}
         />
       </div>
 
@@ -183,6 +233,13 @@ export function PathfindingPage() {
           isPathFound={isPathFound}
           totalVisited={totalVisited}
         />
+      </div>
+
+      {/* Keyboard shortcut hints */}
+      <div className="flex gap-4 text-[11px] text-text-muted">
+        <span>Space: Play/Pause</span>
+        <span>←→: Step</span>
+        <span>R: Reset</span>
       </div>
     </div>
   );
