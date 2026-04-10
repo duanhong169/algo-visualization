@@ -216,7 +216,7 @@ export function PathfindingPage() {
         visualOverlay={visualOverlay}
         onCellClick={isRunning ? () => {} : handleCellClick}
         onCellDrag={isRunning ? () => {} : handleCellDrag}
-        className="h-[calc(100vh-16rem)]"
+        className="h-[calc(100vh-22rem)]"
       />
 
       {/* Playback Controls + Step Explanation */}

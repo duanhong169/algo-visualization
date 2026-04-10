@@ -62,8 +62,8 @@ export const ALGORITHM_EDUCATION: Record<string, AlgorithmEducation> = {
       '重复步骤 2，直到找到终点或 Open Set 为空（无路径）',
     ],
     characteristics: [
-      { label: '最优性', value: '当启发函数可容许（不高估）时，保证找到最短路径' },
-      { label: '完备性', value: '在有限图中，如果存在路径一定能找到' },
+      { label: '最优性', value: '保证找到最短路径。前提是 h(n) 估计值不超过实际距离（本实现使用的 Octile 距离满足此条件）' },
+      { label: '完备性', value: '只要路径存在就一定能找到' },
       { label: '时间复杂度', value: 'O(E log V)，E 为边数，V 为节点数' },
       { label: '空间复杂度', value: 'O(V)，需要存储所有已发现的节点' },
       { label: '移动方向', value: '8 方向（含对角线），对角线代价 √2' },
