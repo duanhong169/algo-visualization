@@ -1,3 +1,5 @@
+import { useState, useRef, useCallback } from 'react';
+
 import { cn } from '@/lib/utils';
 
 interface TooltipProps {
@@ -7,18 +9,44 @@ interface TooltipProps {
 }
 
 /**
- * Inline tooltip — shows text on hover via pure CSS.
- * Wraps children in a relative container with an absolute tooltip.
+ * Inline tooltip — uses fixed positioning to avoid overflow clipping.
+ * Shows below the trigger element, left-aligned to prevent edge cutoff.
  */
 export function Tooltip({ text, children, className }: TooltipProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLSpanElement>(null);
+
+  const handleMouseEnter = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.bottom + 6,
+      left: Math.max(8, rect.left),
+    });
+    setIsVisible(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsVisible(false);
+  }, []);
+
   return (
-    <span className={cn('group relative inline-flex cursor-help', className)}>
+    <span
+      ref={triggerRef}
+      className={cn('inline-flex cursor-help', className)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {children}
-      <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 w-max max-w-[240px] -translate-x-1/2 rounded-md bg-nav-bg px-2.5 py-1.5 text-xs leading-relaxed text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-        {text}
-        {/* Arrow */}
-        <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-nav-bg" />
-      </span>
+      {isVisible && (
+        <span
+          className="fixed z-50 max-w-[280px] rounded-md bg-nav-bg px-3 py-2 text-sm leading-relaxed text-white shadow-lg"
+          style={{ top: pos.top, left: pos.left }}
+        >
+          {text}
+        </span>
+      )}
     </span>
   );
 }
